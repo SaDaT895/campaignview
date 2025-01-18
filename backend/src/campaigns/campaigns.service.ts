@@ -10,19 +10,22 @@ export class CampaignsService {
     return this.prisma.campaign.create({ data });
   }
 
-  async findAll() {
-    return this.prisma.campaign.findMany();
+  async findAll(
+    orderBy?: Prisma.CampaignOrderByWithRelationInput,
+    where?: Prisma.CampaignWhereUniqueInput,
+  ) {
+    return this.prisma.campaign.findMany({ orderBy, where });
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.prisma.campaign.findUnique({ where: { id } });
   }
 
-  update(id: number, data: Prisma.CampaignUpdateInput) {
+  async update(id: number, data: Prisma.CampaignUpdateInput) {
     return this.prisma.campaign.update({ where: { id }, data });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return this.prisma.campaign.delete({ where: { id } });
   }
 }
