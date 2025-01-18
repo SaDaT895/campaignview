@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCampaignDto } from './dto/create-campaign.dto';
-import { UpdateCampaignDto } from './dto/update-campaign.dto';
+import { Campaign, Prisma } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class CampaignsService {
-  create(createCampaignDto: CreateCampaignDto) {
-    return 'This action adds a new campaign';
+  constructor(private prisma: PrismaService) {}
+
+  async create(data: Prisma.CampaignCreateInput) {
+    return this.prisma.campaign.create({ data });
   }
 
-  findAll() {
-    return `This action returns all campaigns`;
+  async findAll() {
+    return this.prisma.campaign.findMany();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} campaign`;
+    return this.prisma.campaign.findUnique({ where: { id } });
   }
 
-  update(id: number, updateCampaignDto: UpdateCampaignDto) {
-    return `This action updates a #${id} campaign`;
+  update(id: number, data: Prisma.CampaignUpdateInput) {
+    return this.prisma.campaign.update({ where: { id }, data });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} campaign`;
+    return this.prisma.campaign.delete({ where: { id } });
   }
 }
