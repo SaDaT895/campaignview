@@ -15,6 +15,7 @@ datasource db {
 
 model Campaign {
   id              Int      @id @default(autoincrement())
+  name            String   @db.VarChar(25)
   createdAt       DateTime @default(now())
   endsAt          DateTime
   updatedAt       DateTime @default(now())
