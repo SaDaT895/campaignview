@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
+import { Campaign } from './campaign';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,18 +12,21 @@ export class DataService {
 
   constructor(private httpClient: HttpClient) {}
   getCampaigns() {
-    this.httpClient.get(`${this.baseUrl}/campaigns`);
+    return this.httpClient.get<Campaign>(`${this.baseUrl}/campaigns`);
   }
 
   createCampaign(data: any) {
-    this.httpClient.post(`${this.baseUrl}/campaigns`, data);
+    return this.httpClient.post<Campaign>(`${this.baseUrl}/campaigns`, data);
   }
 
   editCampaign(id: number, data: any) {
-    this.httpClient.patch(`${this.baseUrl}/campaigns/${id}`, data);
+    return this.httpClient.patch<Campaign>(
+      `${this.baseUrl}/campaigns/${id}`,
+      data
+    );
   }
 
   deleteCampaigns(id: number) {
-    this.httpClient.delete(`${this.baseUrl}/campaigns/${id}`);
+    return this.httpClient.delete(`${this.baseUrl}/campaigns/${id}`);
   }
 }
