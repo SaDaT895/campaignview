@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 import { Campaign } from './campaign';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +11,7 @@ export class DataService {
 
   constructor(private httpClient: HttpClient) {}
   getCampaigns() {
-    return this.httpClient.get<Campaign>(`${this.baseUrl}/campaigns`);
+    return this.httpClient.get<Campaign[]>(`${this.baseUrl}/campaigns`);
   }
 
   createCampaign(data: any) {
