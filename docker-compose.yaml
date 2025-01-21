@@ -1,0 +1,28 @@
+version: '3.8'
+
+name: CampaignView
+services:
+  db:
+    image: "mysql"
+    container_name: DB
+    ports:
+      - "3307:3306"
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=mysql://root:password@db:3307/campaignview
+    depends_on:
+      db:
+        condition: service_healthy
