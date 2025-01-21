@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { DataService } from '../data.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,15 +25,24 @@ import { MatSelectModule } from '@angular/material/select';
 import { AsyncPipe } from '@angular/common';
 import { Channel } from '../models/channel';
 import { Observable } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
+import { Campaign } from '../models/campaign';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-home',
-  imports: [MatTableModule, MatButtonModule],
+  imports: [MatTableModule, MatButtonModule, MatIconModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
   dataService = inject(DataService);
   dialog = inject(MatDialog);
+  router = inject(Router);
+  data: Campaign[] = [];
+  campaigns$ = this.dataService.getCampaigns();
+  channels$ = this.dataService.getChannels();
+  displayedColumns = ['id', 'name', 'createdAt', 'endsAt', 'actions'];
+
   addData() {
     const dialogRef = this.dialog.open(NewCampaignDialog, {
       data: { channels: this.channels$ },
@@ -45,9 +54,14 @@ export class HomeComponent {
           .subscribe((res) => console.log(res));
     });
   }
-  campaigns$ = this.dataService.getCampaigns();
-  channels$ = this.dataService.getChannels();
-  displayedColumns = ['id', 'name', 'createdAt', 'endsAt'];
+
+  deleteCampaign(id: number) {
+    this.dataService.deleteCampaigns(id).subscribe();
+  }
+
+  viewCampaign(id: number) {
+    this.router.navigateByUrl(`/${id}`);
+  }
 }
 
 @Component({
