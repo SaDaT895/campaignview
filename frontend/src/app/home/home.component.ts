@@ -3,6 +3,7 @@ import { MatTableModule } from '@angular/material/table';
 import { DataService } from '../data.service';
 import { MatButtonModule } from '@angular/material/button';
 import {
+  FormArray,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
@@ -22,7 +23,7 @@ import {
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { Channel } from '../models/channel';
 import { Observable } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
@@ -43,7 +44,7 @@ export class HomeComponent {
   channels$ = this.dataService.getChannels();
   displayedColumns = ['id', 'name', 'createdAt', 'endsAt', 'actions'];
 
-  addData() {
+  createCampaign() {
     const dialogRef = this.dialog.open(NewCampaignDialog, {
       data: { channels: this.channels$ },
     });
@@ -53,6 +54,13 @@ export class HomeComponent {
           .createCampaign({ ...campaign, currentExpense: 0 })
           .subscribe((res) => console.log(res));
     });
+  }
+
+  manageChannels() {
+    const dialogRef = this.dialog.open(ManageChannelsDialog, {
+      data: { channels: this.channels$ },
+    });
+    dialogRef.afterClosed().subscribe(console.log);
   }
 
   deleteCampaign(id: number) {
@@ -105,5 +113,62 @@ export class NewCampaignDialog {
 
   submit() {
     this.dialogRef.close(this.form.value);
+  }
+}
+
+@Component({
+  selector: 'manage-channels-dialog',
+  templateUrl: 'manage-channels-dialog.html',
+  styleUrl: './home.component.scss',
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+    MatDatepickerModule,
+    MatSelectModule,
+    CommonModule,
+    MatIconModule,
+  ],
+})
+export class ManageChannelsDialog implements OnInit {
+  readonly dialogRef = inject(MatDialogRef<ManageChannelsDialog>);
+  readonly data = inject<{
+    channels: Observable<Channel[]>;
+  }>(MAT_DIALOG_DATA);
+
+  ngOnInit(): void {
+    this.data.channels.subscribe((channels) => {
+      channels.forEach(
+        (channel) =>
+          channel.name &&
+          (this.form.get('channels') as FormArray).push(
+            new FormControl(channel.name, { nonNullable: true })
+          )
+      );
+    });
+  }
+
+  channels = new FormArray<FormControl<string>>([]);
+  form = new FormGroup({
+    channels: this.channels,
+  });
+
+  addChannel() {
+    (this.form.get('channels') as FormArray).push(
+      new FormControl('', { nonNullable: true })
+    );
+  }
+
+  deleteChannel(id: number) {
+    console.log(id);
+  }
+
+  submit() {
+    this.dialogRef.close(this.channels.value);
   }
 }

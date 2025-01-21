@@ -1,5 +1,8 @@
 <div class="actions-container">
-  <button mat-raised-button (click)="addData()">Create New Campaign</button>
+  <button mat-raised-button (click)="createCampaign()">
+    Create New Campaign
+  </button>
+  <button mat-raised-button (click)="manageChannels()">Manage Channels</button>
 </div>
 
 <table mat-table [dataSource]="campaigns$">

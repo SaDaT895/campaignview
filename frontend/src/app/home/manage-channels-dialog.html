@@ -1,0 +1,24 @@
+<form [formGroup]="form">
+  <div class="channel-actions">
+    <h2 mat-dialog-title>Manage Channels</h2>
+    <button mat-icon-button (click)="addChannel">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content formArrayName="channels">
+    @for (channel of channels.controls; track $index; let i = $index) {
+    <mat-form-field>
+      <mat-label>Channel Name</mat-label>
+      <input matInput [formControlName]="i" />
+    </mat-form-field>
+    <button mat-icon-button (click)="deleteChannel(i)">
+      <mat-icon>delete</mat-icon>
+    </button>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button type="submit">Submit</button>
+  </mat-dialog-actions>
+</form>
