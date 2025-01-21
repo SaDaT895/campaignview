@@ -11,6 +11,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {
+  MAT_DIALOG_DATA,
   MatDialog,
   MatDialogActions,
   MatDialogClose,
@@ -20,6 +21,10 @@ import {
 } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { AsyncPipe } from '@angular/common';
+import { Channel } from '../models/channel';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-home',
   imports: [MatTableModule, MatButtonModule],
@@ -30,14 +35,18 @@ export class HomeComponent {
   dataService = inject(DataService);
   dialog = inject(MatDialog);
   addData() {
-    const dialogRef = this.dialog.open(NewCampaignDialog);
-    dialogRef
-      .afterClosed()
-      .subscribe(
-        (campaign) => campaign && this.dataService.createCampaign(campaign)
-      );
+    const dialogRef = this.dialog.open(NewCampaignDialog, {
+      data: { channels: this.channels$ },
+    });
+    dialogRef.afterClosed().subscribe(async (campaign) => {
+      campaign &&
+        this.dataService
+          .createCampaign({ ...campaign, currentExpense: 0 })
+          .subscribe((res) => console.log(res));
+    });
   }
   campaigns$ = this.dataService.getCampaigns();
+  channels$ = this.dataService.getChannels();
   displayedColumns = ['id', 'name', 'createdAt', 'endsAt'];
 }
 
@@ -55,16 +64,29 @@ export class HomeComponent {
     MatDialogActions,
     MatDialogClose,
     MatDatepickerModule,
+    MatSelectModule,
+    AsyncPipe,
   ],
   providers: [provideNativeDateAdapter()],
 })
 export class NewCampaignDialog {
   readonly dialogRef = inject(MatDialogRef<NewCampaignDialog>);
+  readonly data = inject<{
+    channels: Observable<Channel[]>;
+  }>(MAT_DIALOG_DATA);
+
   form = new FormGroup({
     name: new FormControl('', { validators: [Validators.required] }),
-    startDate: new FormControl<Date>(new Date()),
-    endDate: new FormControl<Date | undefined>(undefined),
-    budgetAllocated: new FormControl<number>(0),
+    createdAt: new FormControl<Date>(new Date()),
+    endsAt: new FormControl<Date | undefined>(undefined, {
+      validators: Validators.required,
+    }),
+    channelId: new FormControl<number | undefined>(undefined, {
+      validators: [Validators.required],
+    }),
+    allocatedBudget: new FormControl<number>(0, {
+      validators: [Validators.required],
+    }),
   });
 
   submit() {

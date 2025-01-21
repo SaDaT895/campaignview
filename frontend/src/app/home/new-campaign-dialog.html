@@ -10,7 +10,7 @@
       <input
         matInput
         [matDatepicker]="startPicker"
-        formControlName="startDate"
+        formControlName="createdAt"
       />
       <mat-datepicker-toggle
         matIconSuffix
@@ -20,7 +20,7 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>End Date</mat-label>
-      <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+      <input matInput [matDatepicker]="endPicker" formControlName="endsAt" />
       <mat-datepicker-toggle
         matIconSuffix
         [for]="endPicker"
@@ -29,11 +29,17 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Advertising Channel</mat-label>
-      <input matInput />
+      <mat-select formControlName="channelId">
+        @for (channel of data.channels | async; track channel) {
+        <mat-option [value]="channel.id">{{channel.name}}</mat-option>
+        } @empty {
+        <mat-option disabled>No channels Created</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Allocated Budget</mat-label>
-      <input matInput formControlName="budgetAllocated" />
+      <input matInput formControlName="allocatedBudget" />
     </mat-form-field>
   </mat-dialog-content>
 

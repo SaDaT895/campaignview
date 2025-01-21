@@ -15,7 +15,7 @@ export class CampaignsController {
   constructor(private readonly campaignsService: CampaignsService) {}
 
   @Post()
-  create(@Body() data: Prisma.CampaignCreateInput) {
+  create(@Body() data: Prisma.CampaignUncheckedCreateInput) {
     return this.campaignsService.create(data);
   }
 

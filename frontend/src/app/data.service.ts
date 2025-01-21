@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
-import { Campaign } from './campaign';
+import { Campaign } from './models/campaign';
+import { Channel } from './models/channel';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,10 @@ export class DataService {
   constructor(private httpClient: HttpClient) {}
   getCampaigns() {
     return this.httpClient.get<Campaign[]>(`${this.baseUrl}/campaigns`);
+  }
+
+  getChannels() {
+    return this.httpClient.get<Channel[]>(`${this.baseUrl}/channels`);
   }
 
   createCampaign(data: any) {

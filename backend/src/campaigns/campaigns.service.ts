@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma.service';
 export class CampaignsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.CampaignCreateInput) {
+  async create(data: Prisma.CampaignUncheckedCreateInput) {
     return this.prisma.campaign.create({ data });
   }
 
