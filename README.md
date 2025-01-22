@@ -9,5 +9,4 @@ Technologies Used:
   - My preferred frontend framework
 
 Get started?
-
-  I have containerised the whole app. So simply run `docker compose up --build`   
+I have containerised the whole app. So simply run `docker compose up --build`   
