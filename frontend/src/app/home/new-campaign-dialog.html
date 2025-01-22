@@ -38,8 +38,12 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field>
+      <mat-label>Current Expense</mat-label>
+      <input type="number" matInput formControlName="currentExpense" />
+    </mat-form-field>
+    <mat-form-field>
       <mat-label>Allocated Budget</mat-label>
-      <input matInput formControlName="allocatedBudget" />
+      <input type="number" matInput formControlName="allocatedBudget" />
     </mat-form-field>
   </mat-dialog-content>
 

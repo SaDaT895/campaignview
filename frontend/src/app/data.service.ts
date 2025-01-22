@@ -15,12 +15,20 @@ export class DataService {
     return this.httpClient.get<Campaign[]>(`${this.baseUrl}/campaigns`);
   }
 
+  getCampaign(id: number) {
+    return this.httpClient.get<Campaign>(`${this.baseUrl}/campaigns/${id}`);
+  }
+
   createChannel(data: any) {
     return this.httpClient.post<Channel>(`${this.baseUrl}/channels`, data);
   }
 
   getChannels() {
     return this.httpClient.get<Channel[]>(`${this.baseUrl}/channels`);
+  }
+
+  getChannel(id: number) {
+    return this.httpClient.get<Channel>(`${this.baseUrl}/channels/${id}`);
   }
 
   createCampaign(data: any) {

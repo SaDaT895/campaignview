@@ -1,1 +1,38 @@
-<h2></h2>
+<div class="actions-container">
+  <h2>{{ campaign.name }}</h2>
+  <button mat-raised-button (click)="editCampaign()">Edit Campaign</button>
+</div>
+
+<div class="card-container">
+  <mat-card class="card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Advertising Channel</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>{{ channel.name }}</mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Budget</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="(campaign.currentExpense / campaign.allocatedBudget) * 100"
+      ></mat-progress-bar>
+      <p>Current Expense: {{ campaign.currentExpense }}</p>
+      <p>Allocated Budget: {{ campaign.allocatedBudget }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Duration</mat-card-title>
+    </mat-card-header>
+    <mat-card-content
+      >{{ getDuration() }} days
+      <p>Start Date: {{ campaign.createdAt | date }}</p>
+      <p>End Date: {{ campaign.endsAt | date }}</p>
+    </mat-card-content>
+  </mat-card>
+</div>

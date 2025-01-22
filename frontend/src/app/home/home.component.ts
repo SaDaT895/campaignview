@@ -64,12 +64,10 @@ export class HomeComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(async (campaign) => {
       campaign &&
-        this.dataService
-          .createCampaign({ ...campaign, currentExpense: 0 })
-          .subscribe((res) => {
-            this.campaings.data.push(res);
-            this.table.renderRows();
-          });
+        this.dataService.createCampaign(campaign).subscribe((res) => {
+          this.campaings.data.push(res);
+          this.table.renderRows();
+        });
     });
   }
 
@@ -127,6 +125,9 @@ export class NewCampaignDialog {
       validators: [Validators.required],
     }),
     allocatedBudget: new FormControl<number>(0, {
+      validators: [Validators.required],
+    }),
+    currentExpense: new FormControl<number>(0, {
       validators: [Validators.required],
     }),
   });
