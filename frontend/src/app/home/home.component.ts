@@ -27,15 +27,24 @@ import {
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { Channel } from '../models/channel';
 import { Observable } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { Campaign } from '../models/campaign';
 import { Router } from '@angular/router';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 @Component({
   selector: 'app-home',
-  imports: [MatTableModule, MatButtonModule, MatIconModule],
+  imports: [
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    DatePipe,
+    MatSortModule,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
@@ -49,6 +58,8 @@ export class HomeComponent implements OnInit {
   @ViewChild(MatTable)
   table!: MatTable<any>;
 
+  @ViewChild(MatSort) sort!: MatSort;
+
   campaigns$ = this.dataService.getCampaigns();
   channels$ = this.dataService.getChannels();
   displayedColumns = ['id', 'name', 'createdAt', 'endsAt', 'actions'];
@@ -56,6 +67,15 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.campaigns$.subscribe((campaings) => (this.campaings.data = campaings));
     this.channels$.subscribe((channels) => (this.channels = channels));
+  }
+
+  ngAfterViewInit() {
+    this.campaings.sort = this.sort;
+  }
+
+  applyFilter(event: KeyboardEvent) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.campaings.filter = filterValue.trim().toLowerCase();
   }
 
   createCampaign() {
@@ -66,7 +86,7 @@ export class HomeComponent implements OnInit {
       campaign &&
         this.dataService.createCampaign(campaign).subscribe((res) => {
           this.campaings.data.push(res);
-          this.table.renderRows();
+          this.campaings._updateChangeSubscription();
         });
     });
   }
@@ -81,7 +101,7 @@ export class HomeComponent implements OnInit {
         this.campaings.data.splice(
           this.campaings.data.findIndex((c) => c.id === res.id),
           1
-        ) && this.table.renderRows()
+        ) && this.campaings._updateChangeSubscription()
     );
   }
 

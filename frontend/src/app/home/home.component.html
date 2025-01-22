@@ -5,27 +5,32 @@
   <button mat-raised-button (click)="manageChannels()">Manage Channels</button>
 </div>
 
-<table mat-table [dataSource]="this.campaings">
+<mat-form-field class="search-bar">
+  <mat-label>Filter</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" />
+</mat-form-field>
+
+<table mat-table [dataSource]="this.campaings" matSort>
   <ng-container matColumnDef="id">
-    <th mat-header-cell *matHeaderCellDef>ID</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
     <td mat-cell *matCellDef="let campaign">
       {{ campaign.id }}
     </td>
   </ng-container>
 
   <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef>Title</th>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
     <td mat-cell *matCellDef="let campaign">{{ campaign.name }}</td>
   </ng-container>
 
   <ng-container matColumnDef="createdAt">
-    <th mat-header-cell *matHeaderCellDef>Start Date</th>
-    <td mat-cell *matCellDef="let campaign">{{ campaign.createdAt }}</td>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Date</th>
+    <td mat-cell *matCellDef="let campaign">{{ campaign.createdAt | date }}</td>
   </ng-container>
 
   <ng-container matColumnDef="endsAt">
-    <th mat-header-cell *matHeaderCellDef>End Date</th>
-    <td mat-cell *matCellDef="let campaign">{{ campaign.endsAt }}</td>
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>End Date</th>
+    <td mat-cell *matCellDef="let campaign">{{ campaign.endsAt | date }}</td>
   </ng-container>
 
   <ng-container matColumnDef="actions">
