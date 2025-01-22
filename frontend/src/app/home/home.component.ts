@@ -1,5 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { MatTableModule } from '@angular/material/table';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  MatTable,
+  MatTableDataSource,
+  MatTableModule,
+} from '@angular/material/table';
 import { DataService } from '../data.service';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -35,14 +39,24 @@ import { Router } from '@angular/router';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   dataService = inject(DataService);
   dialog = inject(MatDialog);
   router = inject(Router);
-  data: Campaign[] = [];
+  campaings = new MatTableDataSource<Campaign>();
+  channels: Channel[] = [];
+
+  @ViewChild(MatTable)
+  table!: MatTable<any>;
+
   campaigns$ = this.dataService.getCampaigns();
   channels$ = this.dataService.getChannels();
   displayedColumns = ['id', 'name', 'createdAt', 'endsAt', 'actions'];
+
+  ngOnInit(): void {
+    this.campaigns$.subscribe((campaings) => (this.campaings.data = campaings));
+    this.channels$.subscribe((channels) => (this.channels = channels));
+  }
 
   createCampaign() {
     const dialogRef = this.dialog.open(NewCampaignDialog, {
@@ -52,19 +66,25 @@ export class HomeComponent {
       campaign &&
         this.dataService
           .createCampaign({ ...campaign, currentExpense: 0 })
-          .subscribe((res) => console.log(res));
+          .subscribe((res) => {
+            this.campaings.data.push(res);
+            this.table.renderRows();
+          });
     });
   }
 
   manageChannels() {
-    const dialogRef = this.dialog.open(ManageChannelsDialog, {
-      data: { channels: this.channels$ },
-    });
-    dialogRef.afterClosed().subscribe(console.log);
+    this.dialog.open(ManageChannelsDialog);
   }
 
   deleteCampaign(id: number) {
-    this.dataService.deleteCampaigns(id).subscribe();
+    this.dataService.deleteCampaign(id).subscribe(
+      (res) =>
+        this.campaings.data.splice(
+          this.campaings.data.findIndex((c) => c.id === res.id),
+          1
+        ) && this.table.renderRows()
+    );
   }
 
   viewCampaign(id: number) {
@@ -137,38 +157,67 @@ export class NewCampaignDialog {
 })
 export class ManageChannelsDialog implements OnInit {
   readonly dialogRef = inject(MatDialogRef<ManageChannelsDialog>);
-  readonly data = inject<{
-    channels: Observable<Channel[]>;
-  }>(MAT_DIALOG_DATA);
+  readonly dataService = inject(DataService);
 
   ngOnInit(): void {
-    this.data.channels.subscribe((channels) => {
-      channels.forEach(
+    this.dataService.getChannels().subscribe((res) =>
+      res.forEach(
         (channel) =>
-          channel.name &&
+          channel &&
           (this.form.get('channels') as FormArray).push(
-            new FormControl(channel.name, { nonNullable: true })
+            new FormGroup({
+              id: new FormControl(channel.id),
+              name: new FormControl(channel.name, {
+                validators: [Validators.required],
+              }),
+            })
           )
-      );
-    });
+      )
+    );
   }
 
-  channels = new FormArray<FormControl<string>>([]);
+  channels = new FormArray<
+    FormGroup<{
+      id: FormControl<number | undefined>;
+      name: FormControl<string>;
+    }>
+  >([]);
   form = new FormGroup({
     channels: this.channels,
   });
 
   addChannel() {
-    (this.form.get('channels') as FormArray).push(
-      new FormControl('', { nonNullable: true })
+    this.channels.push(
+      new FormGroup({
+        id: new FormControl<number | undefined>(undefined, {
+          nonNullable: true,
+        }),
+        name: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.required],
+        }),
+      })
     );
   }
 
-  deleteChannel(id: number) {
-    console.log(id);
+  createOrEditChannel(id: number) {
+    const channelId = this.channels.at(id).controls.id.value;
+    const channelName = this.channels.at(id).controls.name.value;
+    channelId
+      ? this.dataService
+          .editChannel(channelId, { name: channelName })
+          .subscribe()
+      : this.dataService
+          .createChannel({ name: channelName })
+          .subscribe((res) =>
+            this.channels.at(id).controls.id.patchValue(res.id)
+          );
   }
 
-  submit() {
-    this.dialogRef.close(this.channels.value);
+  deleteChannel(id: number) {
+    const channelId = this.channels.at(id).controls.id.value;
+    this.channels.removeAt(id);
+    channelId &&
+      this.dataService.deleteChannel(channelId).subscribe(console.log);
   }
 }

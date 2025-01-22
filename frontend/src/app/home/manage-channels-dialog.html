@@ -6,19 +6,23 @@
     </button>
   </div>
 
-  <mat-dialog-content formArrayName="channels">
-    @for (channel of channels.controls; track $index; let i = $index) {
-    <mat-form-field>
-      <mat-label>Channel Name</mat-label>
-      <input matInput [formControlName]="i" />
-    </mat-form-field>
-    <button mat-icon-button (click)="deleteChannel(i)">
-      <mat-icon>delete</mat-icon>
-    </button>
+  <mat-dialog-content class="form-container" formArrayName="channels">
+    @for (channel of channels.controls; track channel; let i = $index) {
+    <div class="channel-container">
+      <mat-form-field [formGroupName]="i">
+        <mat-label>Channel Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+      <button mat-icon-button (click)="createOrEditChannel(i)">
+        <mat-icon>check</mat-icon>
+      </button>
+      <button mat-icon-button (click)="deleteChannel(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
     }
   </mat-dialog-content>
   <mat-dialog-actions>
-    <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button type="submit">Submit</button>
+    <button mat-button mat-dialog-close>Close</button>
   </mat-dialog-actions>
 </form>

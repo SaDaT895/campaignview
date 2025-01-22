@@ -15,6 +15,10 @@ export class DataService {
     return this.httpClient.get<Campaign[]>(`${this.baseUrl}/campaigns`);
   }
 
+  createChannel(data: any) {
+    return this.httpClient.post<Channel>(`${this.baseUrl}/channels`, data);
+  }
+
   getChannels() {
     return this.httpClient.get<Channel[]>(`${this.baseUrl}/channels`);
   }
@@ -30,7 +34,18 @@ export class DataService {
     );
   }
 
-  deleteCampaigns(id: number) {
-    return this.httpClient.delete(`${this.baseUrl}/campaigns/${id}`);
+  editChannel(id: number, data: { name: string }) {
+    return this.httpClient.patch<Channel>(
+      `${this.baseUrl}/channels/${id}`,
+      data
+    );
+  }
+
+  deleteCampaign(id: number) {
+    return this.httpClient.delete<Campaign>(`${this.baseUrl}/campaigns/${id}`);
+  }
+
+  deleteChannel(id: number) {
+    return this.httpClient.delete<Channel>(`${this.baseUrl}/channels/${id}`);
   }
 }

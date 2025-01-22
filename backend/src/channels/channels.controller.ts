@@ -15,6 +15,7 @@ export class ChannelsController {
 
   @Post()
   create(@Body() data) {
+    console.log(data);
     return this.channelsService.create(data);
   }
 

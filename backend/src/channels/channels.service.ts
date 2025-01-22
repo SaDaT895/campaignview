@@ -6,23 +6,23 @@ import { PrismaService } from 'src/prisma.service';
 export class ChannelsService {
   constructor(private prisma: PrismaService) {}
 
-  create(data: Prisma.ChannelCreateInput) {
+  async create(data: Prisma.ChannelCreateInput) {
     return this.prisma.channel.create({ data });
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.channel.findMany();
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.prisma.channel.findUnique({ where: { id } });
   }
 
-  update(id: number, data: Prisma.ChannelUpdateInput) {
+  async update(id: number, data: Prisma.ChannelUpdateInput) {
     return this.prisma.channel.update({ where: { id }, data });
   }
 
-  remove(id: number) {
-    return this.prisma.campaign.delete({ where: { id } });
+  async remove(id: number) {
+    return this.prisma.channel.delete({ where: { id } });
   }
 }
