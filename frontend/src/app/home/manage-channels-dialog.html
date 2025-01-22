@@ -13,7 +13,11 @@
         <mat-label>Channel Name</mat-label>
         <input matInput formControlName="name" />
       </mat-form-field>
-      <button mat-icon-button (click)="createOrEditChannel(i)">
+      <button
+        mat-icon-button
+        (click)="createOrEditChannel(i)"
+        [disabled]="this.channels.at(i).controls.name.invalid"
+      >
         <mat-icon>check</mat-icon>
       </button>
       <button mat-icon-button (click)="deleteChannel(i)">
