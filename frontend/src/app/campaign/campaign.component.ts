@@ -65,13 +65,17 @@ export class CampaignComponent {
         channels: this.dataService.getChannels(),
       },
     });
-    dialogRef.afterClosed().subscribe((res) =>
-      this.dataService.editCampaign(this.campaign.id, res).subscribe((res) => {
-        this.campaign = res;
+    dialogRef.afterClosed().subscribe(
+      (res) =>
+        res &&
         this.dataService
-          .getChannel(res.channelId)
-          .subscribe((res) => (this.channel = res));
-      })
+          .editCampaign(this.campaign.id, res)
+          .subscribe((res) => {
+            this.campaign = res;
+            this.dataService
+              .getChannel(res.channelId)
+              .subscribe((res) => (this.channel = res));
+          })
     );
   }
 
@@ -130,9 +134,7 @@ export class EditCampaignDialog {
         validators: [Validators.required],
       }
     ),
-    currentExpense: new FormControl<number>(this.data.campaign.currentExpense, {
-      validators: [Validators.required],
-    }),
+    currentExpense: new FormControl<number>(this.data.campaign.currentExpense),
   });
 
   submit() {

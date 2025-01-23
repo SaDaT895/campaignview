@@ -49,6 +49,6 @@
 
   <mat-dialog-actions>
     <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button type="submit">Submit</button>
+    <button mat-button type="submit" [disabled]="form.invalid">Submit</button>
   </mat-dialog-actions>
 </form>

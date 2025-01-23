@@ -147,9 +147,7 @@ export class NewCampaignDialog {
     allocatedBudget: new FormControl<number>(0, {
       validators: [Validators.required],
     }),
-    currentExpense: new FormControl<number>(0, {
-      validators: [Validators.required],
-    }),
+    currentExpense: new FormControl<number>(0),
   });
 
   submit() {
