@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CampaignsService } from './campaigns.service';
 import { Prisma } from '@prisma/client';
@@ -25,20 +26,20 @@ export class CampaignsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.campaignsService.findOne(+id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateCampaignDto: Prisma.CampaignUpdateInput,
   ) {
     return this.campaignsService.update(+id, updateCampaignDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.campaignsService.remove(+id);
   }
 }

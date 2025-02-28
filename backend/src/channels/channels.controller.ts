@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 
@@ -15,7 +16,6 @@ export class ChannelsController {
 
   @Post()
   create(@Body() data) {
-    console.log(data);
     return this.channelsService.create(data);
   }
 
@@ -25,17 +25,17 @@ export class ChannelsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.channelsService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() data) {
     return this.channelsService.update(+id, data);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.channelsService.remove(+id);
   }
 }

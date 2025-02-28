@@ -29,7 +29,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { Channel } from '../models/channel';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { Campaign } from '../models/campaign';
 import { Router } from '@angular/router';
@@ -42,8 +42,8 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    DatePipe,
     MatSortModule,
+    DatePipe,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -53,20 +53,21 @@ export class HomeComponent implements OnInit {
   dialog = inject(MatDialog);
   router = inject(Router);
   campaings = new MatTableDataSource<Campaign>();
-  channels: Channel[] = [];
 
   @ViewChild(MatTable)
   table!: MatTable<any>;
 
   @ViewChild(MatSort) sort!: MatSort;
 
-  campaigns$ = this.dataService.getCampaigns();
-  channels$ = this.dataService.getChannels();
+  campaigns$ = this.dataService.campaigns$.subscribe(
+    (campaigns) => (this.campaings.data = campaigns)
+  );
+  channels$ = this.dataService.channels$;
   displayedColumns = ['id', 'name', 'createdAt', 'endsAt', 'actions'];
 
   ngOnInit(): void {
-    this.campaigns$.subscribe((campaings) => (this.campaings.data = campaings));
-    this.channels$.subscribe((channels) => (this.channels = channels));
+    this.dataService.getChannels();
+    this.dataService.getCampaigns();
   }
 
   ngAfterViewInit() {
@@ -83,11 +84,7 @@ export class HomeComponent implements OnInit {
       data: { channels: this.channels$ },
     });
     dialogRef.afterClosed().subscribe(async (campaign) => {
-      campaign &&
-        this.dataService.createCampaign(campaign).subscribe((res) => {
-          this.campaings.data.push(res);
-          this.campaings._updateChangeSubscription();
-        });
+      campaign && this.dataService.createCampaign(campaign).subscribe();
     });
   }
 
@@ -96,13 +93,7 @@ export class HomeComponent implements OnInit {
   }
 
   deleteCampaign(id: number) {
-    this.dataService.deleteCampaign(id).subscribe(
-      (res) =>
-        this.campaings.data.splice(
-          this.campaings.data.findIndex((c) => c.id === res.id),
-          1
-        ) && this.campaings._updateChangeSubscription()
-    );
+    this.dataService.deleteCampaign(id);
   }
 
   viewCampaign(id: number) {
@@ -179,7 +170,7 @@ export class ManageChannelsDialog implements OnInit {
   readonly dataService = inject(DataService);
 
   ngOnInit(): void {
-    this.dataService.getChannels().subscribe((res) =>
+    this.dataService.channels$.pipe(take(1)).subscribe((res) =>
       res.forEach(
         (channel) =>
           channel &&
@@ -223,9 +214,7 @@ export class ManageChannelsDialog implements OnInit {
     const channelId = this.channels.at(id).controls.id.value;
     const channelName = this.channels.at(id).controls.name.value;
     channelId
-      ? this.dataService
-          .editChannel(channelId, { name: channelName })
-          .subscribe()
+      ? this.dataService.editChannel(channelId, { name: channelName })
       : this.dataService
           .createChannel({ name: channelName })
           .subscribe((res) =>
@@ -236,7 +225,6 @@ export class ManageChannelsDialog implements OnInit {
   deleteChannel(id: number) {
     const channelId = this.channels.at(id).controls.id.value;
     this.channels.removeAt(id);
-    channelId &&
-      this.dataService.deleteChannel(channelId).subscribe(console.log);
+    channelId && this.dataService.deleteChannel(channelId);
   }
 }

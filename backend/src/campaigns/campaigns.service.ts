@@ -7,7 +7,11 @@ export class CampaignsService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: Prisma.CampaignUncheckedCreateInput) {
-    return this.prisma.campaign.create({ data });
+    try {
+      return this.prisma.campaign.create({ data });
+    } catch (err) {
+      throw new Error('DB Error');
+    }
   }
 
   async findAll(
